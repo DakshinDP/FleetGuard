@@ -1,13 +1,6 @@
 # Connected Vehicle Intelligence Hackathon
 ## FleetGuard AI Solution Document Draft
 
-**Submission format:** Export of this document to PDF after team review  
-**Team:** [Team name required]  
-**Team members and roles:** [Add each name, role and email]  
-**Problem space:** Predictive maintenance and fleet risk triage  
-**Repository URL:** [Add after publishing to GitHub]  
-**Demo video:** [Add unlisted video link, maximum 5 minutes]  
-**Submission date:** 01/10/2026 (draft date; update on final submission)
 
 > This is a solution draft based on the supplied hackathon problem statement and template. It separates implemented behavior, assumptions and unmeasured targets. Replace the bracketed team and demo fields and attach real run evidence before submission.
 
