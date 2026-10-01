@@ -1,0 +1,4 @@
+aws_region       = "ap-south-1"
+allowed_cidr     = "203.0.113.7/32" # Replace with your trusted client IPv4 CIDR.
+instance_type    = "t3.xlarge"
+root_disk_gb     = 100

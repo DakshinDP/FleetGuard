@@ -1,0 +1,5 @@
+# AWS ECS starter
+
+This module deploys the API container to private Fargate subnets and writes container logs to CloudWatch. Network, TLS ingress, database/broker/cache/ClickHouse services and a Secrets Manager JSON secret are inputs managed by the deployer. It is a deployable service slice, not an end-to-end cloud platform.
+
+Create `terraform.tfvars` locally (do not commit secrets), set an image URI, private subnet IDs, restrictive security groups, Secrets Manager ARN and dependency endpoints, then run `terraform init`, `terraform plan`, and `terraform apply`. Review the plan, AWS IAM and service networking before applying. CI intentionally does not apply infrastructure. ECS execution needs image-pull permissions; configure ECR permissions if using a private registry outside the standard execution-role scope. For full deployment, add worker/simulator task definitions, static web hosting/CDN, managed Kafka, RDS, cache, analytical storage, alarms, backups, autoscaling and disaster-recovery policy.

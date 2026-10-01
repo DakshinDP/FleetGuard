@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fleetguard-ai"
+version = "0.1.0"
+description = "Synthetic connected-fleet predictive maintenance demo"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi>=0.115,<1", "uvicorn[standard]>=0.30,<1", "psycopg[binary]>=3.2,<4",
+  "confluent-kafka>=2.6,<3", "redis>=5,<6", "clickhouse-connect>=0.8,<1",
+  "pydantic>=2.9,<3", "prometheus-client>=0.21,<1"
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3,<9", "httpx>=0.27,<1", "ruff>=0.7,<1", "locust>=2.32,<3"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"

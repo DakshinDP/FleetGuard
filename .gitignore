@@ -1,0 +1,15 @@
+.env
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+node_modules/
+terraform.tfstate*
+.terraform/
+*.tfvars
+!terraform.tfvars.example
+*.plan
+*.log

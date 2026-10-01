@@ -1,0 +1,78 @@
+apiVersion: v1
+kind: ConfigMap
+metadata: {name: fleetguard-config, namespace: fleetguard}
+data:
+  CLICKHOUSE_HOST: clickhouse
+  KAFKA_BOOTSTRAP_SERVERS: redpanda:9092
+  REDIS_URL: redis://redis:6379/0
+  TENANT_ID: demo-fleet
+  VEHICLE_COUNT: "100000"
+  EVENTS_PER_SECOND: "250"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: api, namespace: fleetguard}
+spec:
+  replicas: 2
+  selector: {matchLabels: {app: api}}
+  template:
+    metadata: {labels: {app: api}}
+    spec:
+      containers:
+        - name: api
+          image: ghcr.io/REPLACE_OWNER/fleetguard-api:REPLACE_TAG
+          ports: [{containerPort: 8000}]
+          envFrom: [{configMapRef: {name: fleetguard-config}}, {secretRef: {name: fleetguard-secrets}}]
+          readinessProbe: {httpGet: {path: /healthz, port: 8000}, initialDelaySeconds: 5, periodSeconds: 10}
+          livenessProbe: {httpGet: {path: /healthz, port: 8000}, initialDelaySeconds: 15, periodSeconds: 20}
+          resources: {requests: {cpu: 200m, memory: 256Mi}, limits: {cpu: "1", memory: 1Gi}}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: api, namespace: fleetguard}
+spec:
+  selector: {app: api}
+  ports: [{port: 8000, targetPort: 8000}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: worker, namespace: fleetguard}
+spec:
+  replicas: 2
+  selector: {matchLabels: {app: worker}}
+  template:
+    metadata: {labels: {app: worker}}
+    spec:
+      containers:
+        - name: worker
+          image: ghcr.io/REPLACE_OWNER/fleetguard-api:REPLACE_TAG
+          command: [python, -m, fleetguard.worker]
+          envFrom: [{configMapRef: {name: fleetguard-config}}, {secretRef: {name: fleetguard-secrets}}]
+          resources: {requests: {cpu: 250m, memory: 384Mi}, limits: {cpu: "2", memory: 2Gi}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: simulator, namespace: fleetguard}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: simulator}}
+  template:
+    metadata: {labels: {app: simulator}}
+    spec:
+      containers:
+        - name: simulator
+          image: ghcr.io/REPLACE_OWNER/fleetguard-api:REPLACE_TAG
+          command: [python, -m, fleetguard.simulator]
+          envFrom: [{configMapRef: {name: fleetguard-config}}, {secretRef: {name: fleetguard-secrets}}]
+          resources: {requests: {cpu: 100m, memory: 128Mi}, limits: {cpu: "1", memory: 512Mi}}
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata: {name: worker, namespace: fleetguard}
+spec:
+  scaleTargetRef: {apiVersion: apps/v1, kind: Deployment, name: worker}
+  minReplicas: 2
+  maxReplicas: 12
+  metrics:
+    - type: Resource
+      resource: {name: cpu, target: {type: Utilization, averageUtilization: 65}}

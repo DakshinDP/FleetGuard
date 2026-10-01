@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FleetGuard | Fleet risk intelligence</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header><div class="brand"><span class="mark">F</span><div><b>FleetGuard</b><small>FLEET RISK INTELLIGENCE</small></div></div><div id="session" hidden><span id="user"></span><button id="logout" class="quiet">Sign out</button></div></header>
+  <main>
+    <section id="login" class="login card"><p class="eyebrow">CONNECTED FLEET OPERATIONS</p><h1>Welcome back</h1><p class="muted">Sign in to review fleet health and risk alerts.</p><form id="login-form"><label>Email<input name="email" type="email" autocomplete="username" value="demo@fleetguard.local" required></label><label>Password<input name="password" type="password" autocomplete="current-password" value="ChangeMe-123!" required></label><button class="primary">Sign in</button><p id="login-error" class="error"></p></form><small class="muted">Local demo credentials. Change these before sharing the stack.</small></section>
+    <section id="app" hidden>
+      <div class="intro"><div><p class="eyebrow">FLEET OVERVIEW</p><h1>Know what needs attention</h1><p class="muted">Live synthetic telemetry, prioritized maintenance signals and fleet status.</p></div><span class="live"><i></i> STREAM LIVE</span></div>
+      <div class="metrics"><article class="card metric"><span>ACTIVE VEHICLES</span><strong id="vehicles">—</strong><small>In this tenant</small></article><article class="card metric"><span>OPEN ALERTS</span><strong id="open">—</strong><small>Awaiting review</small></article><article class="card metric danger"><span>CRITICAL</span><strong id="critical">—</strong><small>Requires prompt review</small></article><article class="card metric"><span>EVENTS · 5 MIN</span><strong id="events">—</strong><small>Accepted unique events</small></article></div>
+      <div class="columns"><section class="card table-card"><div class="section-head"><div><h2>Priority alerts</h2><p class="muted">Recent signals that may need action</p></div><button id="refresh" class="quiet">Refresh</button></div><div class="table-wrap"><table><thead><tr><th>VEHICLE</th><th>ISSUE</th><th>SEVERITY</th><th>RISK</th><th>TIME</th><th></th></tr></thead><tbody id="alerts"></tbody></table></div><div id="empty" class="empty" hidden>No alerts yet. Keep the stream running to see vehicle signals.</div></section><section class="card side-card"><p class="eyebrow">HOW FLEETGUARD WORKS</p><h2>From signal to action</h2><ol><li><b>Ingest</b><span>Multiple OEM payloads enter a durable event stream.</span></li><li><b>Normalize</b><span>Adapter logic produces one canonical telemetry schema.</span></li><li><b>Prioritize</b><span>Explainable rules surface faults and high temperature.</span></li><li><b>Act</b><span>Review and acknowledge tenant-scoped alerts.</span></li></ol><small class="muted">Risk scores support triage; they are not failure probabilities.</small></section></div>
+      <section class="card table-card vehicles-card"><div class="section-head"><div><h2>Fleet vehicles</h2><p class="muted">Search the active synthetic fleet</p></div><input id="search" class="search" placeholder="Filter by vehicle ID" aria-label="Filter vehicles"></div><div class="table-wrap"><table><thead><tr><th>VEHICLE</th><th>MAKE</th><th>MODEL</th><th>YEAR</th><th>POWERTRAIN</th><th>STATUS</th></tr></thead><tbody id="vehicle-rows"></tbody></table></div><div id="vehicle-more" class="muted"></div></section>
+    </section>
+    <div id="toast" role="status"></div>
+  </main><script src="/app.js" defer></script>
+</body></html>

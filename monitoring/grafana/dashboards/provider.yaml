@@ -1,0 +1,10 @@
+apiVersion: 1
+providers:
+  - name: FleetGuard
+    orgId: 1
+    folder: FleetGuard
+    type: file
+    disableDeletion: true
+    editable: false
+    options:
+      path: /etc/grafana/provisioning/dashboards

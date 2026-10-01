@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fleetguard.local/schemas/telemetry-event-v1.json",
+  "title": "FleetGuard canonical telemetry event",
+  "type": "object",
+  "required": ["event_id", "tenant_id", "vehicle_id", "source_oem", "schema_version", "event_ts", "speed_kmh", "engine_temp_c", "odometer_km"],
+  "properties": {
+    "event_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "tenant_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "vehicle_id": {"type": "string", "minLength": 1, "maxLength": 64},
+    "source_oem": {"type": "string", "enum": ["oem-a", "oem-b", "oem-c"]},
+    "schema_version": {"type": "integer", "minimum": 1},
+    "event_ts": {"type": "string", "format": "date-time"},
+    "speed_kmh": {"type": "number", "minimum": 0, "maximum": 300},
+    "engine_temp_c": {"type": "number", "minimum": 0, "maximum": 250},
+    "battery_soc_pct": {"type": ["number", "null"], "minimum": 0, "maximum": 100},
+    "odometer_km": {"type": "number", "minimum": 0, "maximum": 1000000},
+    "latitude": {"type": ["number", "null"], "minimum": -90, "maximum": 90},
+    "longitude": {"type": ["number", "null"], "minimum": -180, "maximum": 180},
+    "dtc": {"type": "array", "items": {"type": "string", "maxLength": 16}, "maxItems": 32},
+    "harsh_brake": {"type": "boolean"}
+  },
+  "additionalProperties": true
+}

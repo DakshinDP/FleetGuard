@@ -1,0 +1,41 @@
+#!/bin/bash
+set -euo pipefail
+exec > >(tee -a /var/log/fleetguard-bootstrap.log | logger -t fleetguard-bootstrap -s 2>/dev/console) 2>&1
+# Bundle checksum ${bundle_etag} changes user data when Terraform uploads a new project bundle.
+
+export DEBIAN_FRONTEND=noninteractive
+apt-get update
+apt-get install -y docker.io docker-compose-v2 unzip awscli openssl
+systemctl enable --now docker
+mkdir -p /opt/fleetguard
+aws s3 cp "s3://${bucket}/${object_key}" /tmp/fleetguard-ai.zip --region "${aws_region}"
+unzip -oq /tmp/fleetguard-ai.zip -d /opt
+cd /opt/fleetguard-ai
+cp .env.example .env
+python3 - <<'PY'
+import os
+from pathlib import Path
+path = Path(".env")
+values = {
+    "POSTGRES_PASSWORD": os.urandom(32).hex(),
+    "JWT_SECRET": os.urandom(48).hex(),
+    "DEMO_PASSWORD": os.urandom(20).hex(),
+    "HOST_BIND_ADDRESS": "0.0.0.0",
+    "HOST_PORT": "80",
+}
+lines = path.read_text().splitlines()
+for key, value in values.items():
+    lines = [f"{key}={value}" if line.startswith(key + "=") else line for line in lines]
+path.write_text("\n".join(lines) + "\n")
+path.chmod(0o600)
+Path("/root/.fleetguard-demo-password").write_text(values["DEMO_PASSWORD"])
+Path("/root/.fleetguard-demo-password").chmod(0o600)
+PY
+stored=0
+for attempt in $(seq 1 20); do
+  if aws ssm put-parameter --name "${parameter}" --type SecureString --overwrite --value file:///root/.fleetguard-demo-password --region "${aws_region}"; then stored=1; break; fi
+  sleep 5
+done
+if [ "$stored" -ne 1 ]; then echo "Could not persist the generated demo password to SSM"; exit 1; fi
+rm -f /root/.fleetguard-demo-password /tmp/fleetguard-ai.zip
+docker compose up --build -d
